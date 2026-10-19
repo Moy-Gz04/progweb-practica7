@@ -1,0 +1,605 @@
+{
+  "info": {
+    "name": "Practica Integradora - CRUD Usuarios (SOAP + REST)",
+    "description": "Orden sugerido: 1 a 10. Cambia la variable base_url para probar en localhost o en AWS. La peticion 4 guarda la clave del usuario nuevo en {{cve}} para usarla en 6, 7 y 8.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/progweb/practica7"
+    },
+    {
+      "key": "cve",
+      "value": "0"
+    }
+  ],
+  "item": [
+    {
+      "name": "SOAP",
+      "item": [
+        {
+          "name": "1. nombre (prueba del servicio)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#nombre\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:nombre>\n      <param0 xsi:type=\"xsd:string\">Juan</param0>\n    </ns1:nombre>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "2. sp_Acceso (login correcto)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));",
+                  "pm.test(\"Bandera BAN = 1\", () => pm.expect(pm.response.text()).to.match(/<key[^>]*>BAN<\\/key><value[^>]*>1</));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#sp_Acceso\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:sp_Acceso>\n      <param0 xsi:type=\"xsd:string\">jgomez</param0>\n      <param1 xsi:type=\"xsd:string\">prosoft2026</param1>\n    </ns1:sp_Acceso>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "3. vwRptUsuarios (reporte)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));",
+                  "pm.test(\"Trae usuarios con pais y coordenadas\", () => { const t = pm.response.text(); pm.expect(t).to.include(\"<key xsi:type=\\\"xsd:string\\\">pais</key>\"); pm.expect(t).to.include(\"longitud\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#vwRptUsuarios\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:vwRptUsuarios/>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "4. sp_InsUsuario (alta)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));",
+                  "pm.test(\"Bandera BAN = 1\", () => pm.expect(pm.response.text()).to.match(/<key[^>]*>BAN<\\/key><value[^>]*>1</));",
+                  "const m = pm.response.text().match(/<key[^>]*>CVE<\\/key><value[^>]*>(\\d+)</);",
+                  "if (m) { pm.collectionVariables.set(\"cve\", m[1]); }",
+                  "pm.test(\"Se guardo la clave del usuario nuevo\", () => pm.expect(m).to.not.equal(null));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#sp_InsUsuario\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:sp_InsUsuario>\n      <param0 xsi:type=\"xsd:string\">Postman</param0>\n      <param1 xsi:type=\"xsd:string\">Prueba</param1>\n      <param2 xsi:type=\"xsd:string\">Servicio</param2>\n      <param3 xsi:type=\"xsd:string\">771-123-4567</param3>\n      <param4 xsi:type=\"xsd:string\">postman@correo.com</param4>\n      <param5 xsi:type=\"xsd:string\">pmtest01</param5>\n      <param6 xsi:type=\"xsd:string\">clave123</param6>\n      <param7 xsi:type=\"xsd:string\">4</param7>\n      <param8 xsi:type=\"xsd:string\">Colombia</param8>\n      <param9 xsi:type=\"xsd:string\">-74.072092</param9>\n      <param10 xsi:type=\"xsd:string\">4.710989</param10>\n    </ns1:sp_InsUsuario>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "5. sp_InsUsuario (usuario repetido -> BAN 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));",
+                  "pm.test(\"Bandera BAN = 0\", () => pm.expect(pm.response.text()).to.match(/<key[^>]*>BAN<\\/key><value[^>]*>0</));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#sp_InsUsuario\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:sp_InsUsuario>\n      <param0 xsi:type=\"xsd:string\">Postman</param0>\n      <param1 xsi:type=\"xsd:string\">Prueba</param1>\n      <param2 xsi:type=\"xsd:string\">Servicio</param2>\n      <param3 xsi:type=\"xsd:string\">771-123-4567</param3>\n      <param4 xsi:type=\"xsd:string\">postman@correo.com</param4>\n      <param5 xsi:type=\"xsd:string\">pmtest01</param5>\n      <param6 xsi:type=\"xsd:string\">clave123</param6>\n      <param7 xsi:type=\"xsd:string\">4</param7>\n      <param8 xsi:type=\"xsd:string\">Colombia</param8>\n      <param9 xsi:type=\"xsd:string\">-74.072092</param9>\n      <param10 xsi:type=\"xsd:string\">4.710989</param10>\n    </ns1:sp_InsUsuario>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "6. sp_UpdUsuario (cambia a Argentina)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));",
+                  "pm.test(\"Bandera BAN = 1\", () => pm.expect(pm.response.text()).to.match(/<key[^>]*>BAN<\\/key><value[^>]*>1</));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#sp_UpdUsuario\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:sp_UpdUsuario>\n      <param0 xsi:type=\"xsd:string\">{{cve}}</param0>\n      <param1 xsi:type=\"xsd:string\">Postman</param1>\n      <param2 xsi:type=\"xsd:string\">Prueba</param2>\n      <param3 xsi:type=\"xsd:string\">Servicio</param3>\n      <param4 xsi:type=\"xsd:string\">771-123-4567</param4>\n      <param5 xsi:type=\"xsd:string\">postman@correo.com</param5>\n      <param6 xsi:type=\"xsd:string\">pmtest01</param6>\n      <param7 xsi:type=\"xsd:string\"></param7>\n      <param8 xsi:type=\"xsd:string\">4</param8>\n      <param9 xsi:type=\"xsd:string\">Argentina</param9>\n      <param10 xsi:type=\"xsd:string\">-58.381559</param10>\n      <param11 xsi:type=\"xsd:string\">-34.603722</param11>\n    </ns1:sp_UpdUsuario>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "7. sp_UpdUsuario (correo invalido -> BAN 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));",
+                  "pm.test(\"Bandera BAN = 0\", () => pm.expect(pm.response.text()).to.match(/<key[^>]*>BAN<\\/key><value[^>]*>0</));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#sp_UpdUsuario\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:sp_UpdUsuario>\n      <param0 xsi:type=\"xsd:string\">{{cve}}</param0>\n      <param1 xsi:type=\"xsd:string\">Postman</param1>\n      <param2 xsi:type=\"xsd:string\">Prueba</param2>\n      <param3 xsi:type=\"xsd:string\">Servicio</param3>\n      <param4 xsi:type=\"xsd:string\">771-123-4567</param4>\n      <param5 xsi:type=\"xsd:string\">correo-malo</param5>\n      <param6 xsi:type=\"xsd:string\">pmtest01</param6>\n      <param7 xsi:type=\"xsd:string\"></param7>\n      <param8 xsi:type=\"xsd:string\">4</param8>\n      <param9 xsi:type=\"xsd:string\">Argentina</param9>\n      <param10 xsi:type=\"xsd:string\">-58.381559</param10>\n      <param11 xsi:type=\"xsd:string\">-34.603722</param11>\n    </ns1:sp_UpdUsuario>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "8. sp_DelUsuario (baja)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));",
+                  "pm.test(\"Bandera BAN = 1\", () => pm.expect(pm.response.text()).to.match(/<key[^>]*>BAN<\\/key><value[^>]*>1</));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#sp_DelUsuario\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:sp_DelUsuario>\n      <param0 xsi:type=\"xsd:string\">{{cve}}</param0>\n    </ns1:sp_DelUsuario>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "9. rptRoles (catalogo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es un XML SOAP valido\", () => pm.expect(pm.response.text()).to.include(\"Envelope\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "text/xml; charset=utf-8"
+              },
+              {
+                "key": "SOAPAction",
+                "value": "\"http://localhost/#rptRoles\""
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns1=\"http://localhost/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n  <SOAP-ENV:Body>\n    <ns1:rptRoles/>\n  </SOAP-ENV:Body>\n</SOAP-ENV:Envelope>",
+              "options": {
+                "raw": {
+                  "language": "xml"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/servicioweb/servicioweb.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "servicioweb",
+                "servicioweb.php"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "REST (apiweb)",
+      "item": [
+        {
+          "name": "10. testApiKey (PHP reconoce la API Key)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Reconoce la API Key\", () => pm.expect(pm.response.text()).to.include(\"OK!!\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/apiweb/testApiKey.php",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "apiweb",
+                "testApiKey.php"
+              ]
+            }
+          }
+        },
+        {
+          "name": "11. consultaPais (Mexico)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test(\"Trae el pais con capital, poblacion, monedas e idiomas\", () => { const p = j.data.objects[0]; pm.expect(p.capitals[0].name).to.eql(\"Mexico City\"); pm.expect(p.population).to.be.above(1000000); pm.expect(p.currencies[0].code).to.eql(\"MXN\"); pm.expect(p.languages.length).to.be.above(0); pm.expect(p.flag.url_png).to.include(\"http\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/apiweb/consultaPais.php?pais=Mexico",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "apiweb",
+                "consultaPais.php"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": "Mexico"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "12. consultaClima (Ciudad de Mexico)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const c = pm.response.json();",
+                  "pm.test(\"Trae temperatura, humedad y condicion\", () => { pm.expect(c.temperatura).to.be.a(\"number\"); pm.expect(c.humedad).to.be.a(\"number\"); pm.expect(c.condicion).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/apiweb/consultaClima.php?lat=19.432608&lon=-99.133209",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "apiweb",
+                "consultaClima.php"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "19.432608"
+                },
+                {
+                  "key": "lon",
+                  "value": "-99.133209"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "13. consultaClima (coordenadas invalidas -> 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/apiweb/consultaClima.php?lat=abc&lon=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "apiweb",
+                "consultaClima.php"
+              ],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "abc"
+                },
+                {
+                  "key": "lon",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
